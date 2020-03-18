@@ -63,7 +63,7 @@ def update_screen(ai_settings,screen,ship,aliens,bullets):
     pygame.display.flip()
 
 
-def update_bullets(bullets):
+def update_bullets(ai_settings,screen,ship,aliens,bullets):
     """Updates position of bullets and get rid of old bullets."""
     #Update bullets position.
     bullets.update()
@@ -73,6 +73,17 @@ def update_bullets(bullets):
             bullets.remove(bullet)
     print(len(bullets))
 
+    check_bullet_alien_collisions(ai_settings,screen,ship,aliens,bullets)
+
+def check_bullet_alien_collisions(ai_settings,screen,ship,aliens,bullets):
+    """Respond to bullet alien collision."""
+    #Check for any bullet that have hit the alien.
+    #if so then get rid of the bullet and alien.
+    collisions = pygame.sprite.groupcollide(bullets,aliens,True,True)
+
+    if len(aliens) == 0:
+        bullets.empty()
+        create_fleet(ai_settings,screen,ship,aliens)
     
 def fire_bullet(ai_settings,screen,ship,bullets):
     """Fire a bullet if limit not reached yet."""
