@@ -40,7 +40,7 @@ def run_game():
 
     #Start the amin loop for the game
     while True:
-        gf.check_events(ai_settings,screen,stats,play_button,ship,bullets)
+        gf.check_events(ai_settings,screen,stats,play_button,ship,aliens,bullets)
         #will only run if your game is active
         if stats.game_active:
             ship.update()   

@@ -4,7 +4,7 @@ from bullet import Bullet
 from alien import Alien
 from time import sleep
 
-def check_events(ai_settings,screen,stats,play_button,ship,bullets):
+def check_events(ai_settings,screen,stats,play_button,ship,aliens,bullets):
     """ Respond to Key press and Mouse events. """
 
     #Watch for keyboard and mouse events
@@ -23,13 +23,29 @@ def check_events(ai_settings,screen,stats,play_button,ship,bullets):
         
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()
-            check_play_button(stats,play_button,mouse_x,mouse_y)
+            check_play_button(ai_settings,screen,stats,play_button,ship,aliens,bullets,mouse_x,mouse_y)
 
-def check_play_button(stats,play_button,mouse_x,mouse_y):
+def check_play_button(ai_settings,screen,stats,play_button,ship,aliens,bullets,mouse_x,mouse_y):
     """Starts a new game when the player clicks the game."""
-    if play_button.rect.collidepoint(mouse_x,mouse_y):
+    button_clicked = play_button.rect.collidepoint(mouse_x,mouse_y)
+    if button_clicked and not stats.game_active: #Because we want to avoid clicking of play button area after the game starts
+        #Reset the game settings
+        ai_settings.initialize_dyanamic_settings()
+
+        #Hide the mouse cursor - Passing False to set_visible() tells Pygame to hide the cursor when the mouse is over the game window.
+        pygame.mouse.set_visible(False)
+
+        #Reset the game statistics
+        stats.reset_stats()
         stats.game_active = True
 
+        #Empty the list of aliens and bullets
+        aliens.empty()
+        bullets.empty()
+
+        #Create a new fleet and center the ship.
+        create_fleet(ai_settings,screen,ship,aliens)
+        ship.center_ship()
 
 def check_keydown_events(event,ai_settings,screen,ship,bullets):
     """Respond to the Key Press Event"""
@@ -97,7 +113,9 @@ def check_bullet_alien_collisions(ai_settings,screen,ship,aliens,bullets):
     collisions = pygame.sprite.groupcollide(bullets,aliens,True,True)
 
     if len(aliens) == 0:
+        #Destroy existing bullets,speedup the game, and create new fleet.
         bullets.empty()
+        ai_settings.increase_speed()
         create_fleet(ai_settings,screen,ship,aliens)
     
 def fire_bullet(ai_settings,screen,ship,bullets):
@@ -205,6 +223,7 @@ def ship_hit(ai_settings, stats, screen, ship, aliens, bullets):
         sleep(0.5)
     else:
         stats.game_active = False
+        pygame.mouse.set_visible(True)
         
 def check_aliens_bottom(ai_settings, stats, screen, ship, aliens, bullets):
     """Check if the aliens have reach the bottom of the screen"""
