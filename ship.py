@@ -1,10 +1,12 @@
 import pygame
+from pygame.sprite import Sprite
 
-class Ship():
+class Ship(Sprite):
 
     #The __init__() method of Ship takes two parameters: the self reference and the screen where we’ll draw the ship.
     def __init__(self,ai_settings,screen):
         """ Initialize the ship and set it's starting position """
+        super(Ship,self).__init__()
         self.screen = screen
         #Added ai_settings so that ship has acces to the speed_factor attribute.
         self.ai_settings = ai_settings
